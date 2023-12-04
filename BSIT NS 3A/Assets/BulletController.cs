@@ -8,14 +8,27 @@ public class BulletController : MonoBehaviour
     public float LifeTime = 2f;
     public float Speed = 5f;
 
+    [SerializeField]
+    private Rigidbody2D _RigidBody;
+
     public delegate void OnPoolHandling (BulletController poolable);
     public OnPoolHandling OnPool = delegate {
     };
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    private bool _Bounced = false;
+
+    private void OnCollisionEnter2D (Collision2D collision) {
+        // PoolObject ();
+        _Bounced = true;
+
+    }
+
+    private void OnCollisionStay2D (Collision2D collision) {
+
+    }
+
+    private void OnCollisionExit2D (Collision2D collision) {
+        Debug.Log ("EXITED");
     }
 
     // Update is called once per frame
@@ -23,7 +36,8 @@ public class BulletController : MonoBehaviour
         float t = Time.deltaTime;
 
         _CurrentLifeTime += t;
-        transform.position += new Vector3 (Speed * t, 0f, 0f);
+
+        _RigidBody.velocity = new Vector2 (_Bounced ? -Speed : Speed, 0f);
 
         if (_CurrentLifeTime > LifeTime) {
             PoolObject ();
@@ -42,6 +56,7 @@ public class BulletController : MonoBehaviour
 
     public void ResetObject () {
         _CurrentLifeTime = 0f;
+        _Bounced = false;
     }
 
 }
